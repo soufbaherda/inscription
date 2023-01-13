@@ -3,9 +3,20 @@ import form from './form.module.css'
 import logo from '../images/logoEmi.png';
 import um5 from '../images/UM5.png';
 import {  FcNext } from "react-icons/fc";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Header from '../header/Header';
+import { useContext } from 'react';
+import { UserContext } from '../UserContext';
 const SecondPage = () => {
+    const navigate =useNavigate()
+    const { user, setUser } = useContext(UserContext);
+    if (user==null){
+        navigate("/SignUp")
+    }
     return (
+        <>
+        <Header/>
+        
         <div className={form.cont}>
 
             <div className={form[`cont-a`]}>
@@ -35,6 +46,7 @@ const SecondPage = () => {
                 <Link to= "/FirstPage" ><a className={form.bttn} style={{marginLeft :"80%"}}> <a>Suivant <FcNext /></a></a></Link>
             </div>
         </div>
+        </>
     );
 }
 

@@ -18,7 +18,7 @@ import createPalette from '@material-ui/core/styles/createPalette';
 
 
 
-const ThirdPage = () => {
+const FourthPage = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     const [file, setFile] = useState('');
@@ -45,7 +45,7 @@ const ThirdPage = () => {
         // const formData = new FormData();
         formData.append('file', file);
         console.log('formData', formData)
-        fetch(`http://127.0.0.1:5000/api/upload/${cin}`,
+        fetch(`http://127.0.0.1:5000/api/upload/${filename.split(".")[0]}`,
             {
                 method: 'POST',
                 body: formData,
@@ -56,56 +56,35 @@ const ThirdPage = () => {
                 console.log('Success:', result);
                 if (result) {
                     setMessage(result);
-                    fetch(`http://127.0.0.1:5000/api/ocr/${result}`)
+                    fetch(`http://127.0.0.1:5000/api/signature/${filename}`)
                         .then((response) => response.json())
                         .then((data) => {
                             console.log(data)
                             setState(data)
-                            setLoading(false)
-                            if (cin === data["cin"]) {
-                                var compte = JSON.stringify({
-                                    matricule,
-                                    cin,
-                                });
-                                var myHeaders = new Headers();
-                                myHeaders.append("Content-Type", "application/json");
-                                var requestOptions = {
-                                    method: "POST",
-                                    headers: myHeaders,
-                                    body: compte,
-                                    redirect: "follow",
-                                };
-                                fetch(`http://127.0.0.1:5000/api/upload/bd/`, requestOptions)
-                                .then((response) => response.json())
+                            if (!data) {
+                                setLoading(false);
+                                alert("Veuillez Reload un autre fichier");
+                                setFile(null)
+                            }
+                            else{
+                                setLoading(true);
+                                alert("C'est votre Baccalauréat, vous pouvez continuer");
+                                fetch(`http://127.0.0.1:5000/api/send/${matricule}/1`)
+                                    .then((response) => response.json())
                                     .then((result) => {
-                                        console.log('upload:', result);
+                                        console.log('send:', result);
+                                        setLoading(false);
+                                        navigate("/Final")
                                     });
                             }
+                            
                         });
-                }
-                else {
-                    alert("Veuillez Reload un autre fichier");
                 }
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
     }
-    useEffect(() => {
-        if (state) {
-            if (cin !== state["cin"]) {
-                setState(null)
-                alert("Veuillez Reload un autre fichier");
-                setFile(null)
-            }
-            else {
-
-                alert("C'est votre carte national, vous pouvez continuer");
-            }
-
-        }
-    }, [state]);
-
 
     return (
         <>
@@ -114,16 +93,16 @@ const ThirdPage = () => {
                 <div className={form.bar}>
 
                     <div className={form[`cont-a`]}>
-                        <div className={form.progress}><a className={form.a2}> Votre profile</a></div>
-                        <div><a className={form.a1}>Fournir CIN</a></div>
-                        <a className={form.a2}>Piéces à fournir</a>
+                        <div ><a className={form.a2}> Votre profile</a></div>
+                        <div><a className={form.a2}>Fournir CIN</a></div>
+                        <div className={form.progress}><a className={form.a1}>Piéces à fournir</a></div>
                     </div>
                 </div>
                 <div className={form.title}>
                     <p style={{ lineHeight: "0.4" }}>
                         <a style={{ color: "grey" }}>Etape  </a>
-                        <h1>CIN</h1>
-                        <a style={{ color: "grey", marginBottom: "10%" }}>CARTE D’IDENTITÉ NATIONALE (CIN) :</a>
+                        <h1>Bac</h1>
+                        <a style={{ color: "grey", marginBottom: "10%" }}>Votre Baccalauréat (Bac) :</a>
                     </p>
 
                 </div>
@@ -156,7 +135,7 @@ const ThirdPage = () => {
                                 {file ? (
                                     <div >
                                         <p>
-                                            <img style={{ width: '40%' }} src={image} alt={file.name} />
+                                            <img style={{ width: '20%' }} src={image} alt={file.name} />
                                         </p>
                                     </div>
                                 ) : <p>Drag your files here or click in this area.</p>}
@@ -173,7 +152,7 @@ const ThirdPage = () => {
                         <br />
                         <br />
                         <button className={form[`bttn`]} style={{ left: "5%", }} onClick={() => { navigate("/FirstPage") }}><FaArrowLeft /> précédent</button>
-                        {state && <button className={form[`bttn`]} style={{ left: "80%", }} onClick={()=>{navigate("/FourthPage")}} >Suivant <FaArrowRight /> </button>}
+                        {/* {state && <button className={form[`bttn`]} style={{ left: "80%", }} >Suivant <FaArrowRight /> </button>} */}
                     </div>
                 </div>
 
@@ -182,4 +161,4 @@ const ThirdPage = () => {
     );
 }
 
-export default ThirdPage;
+export default FourthPage;
